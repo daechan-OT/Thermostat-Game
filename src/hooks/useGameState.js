@@ -118,10 +118,12 @@ export function useGameState() {
   }, [])
 
   // ── applyEnergy ────────────────────────────────────────────────────────────
-  // Called after user taps "Understood" on either card type (post-reveal for choice, post-reading for env)
+  // Called after user taps "Understood".
+  // IMPORTANT: history is NOT updated synchronously here.
+  // It is pushed atomically inside the timeout — at the exact same moment
+  // currentCard changes — so the card never appears in both places at once.
   const applyEnergy = useCallback((impact) => {
     setState(prev => {
-      // Handle the 'balance' impact type: moves energy 1 step towards 0
       let delta = impact
       if (impact === 'balance') {
         delta = prev.energy > 0 ? -1 : prev.energy < 0 ? 1 : 0
@@ -131,18 +133,12 @@ export function useGameState() {
       const newEnergy = Math.max(-5, Math.min(5, rawNext))
       const newRound = prev.round + 1
 
-      // Animate the display gauge
       setDisplayEnergy(newEnergy)
 
-      // Determine next screen after animation
       let nextScreen = 'game'
-      if (Math.abs(newEnergy) >= 5) {
-        nextScreen = 'lose'
-      } else if (newRound >= 10) {
-        nextScreen = 'win'
-      }
+      if (Math.abs(newEnergy) >= 5) nextScreen = 'lose'
+      else if (newRound >= 10) nextScreen = 'win'
 
-      // Push current card to history
       const historyEntry = {
         ...prev.currentCard,
         roundNumber: prev.round + 1,
@@ -151,47 +147,32 @@ export function useGameState() {
         chosenOptionId: prev.selectedOption,
       }
 
-      if (nextScreen !== 'game') {
-        // Game over — update state after animation delay
-        if (animationTimer.current) clearTimeout(animationTimer.current)
-        animationTimer.current = setTimeout(() => {
-          setState(s => ({
-            ...s,
-            screen: nextScreen,
-            energy: newEnergy,
-            round: newRound,
-            history: [...s.history, historyEntry],
-            phase: 'reading',
-          }))
-        }, 700)
-
-        return {
-          ...prev,
-          phase: 'animating',
-          energy: newEnergy,
-          round: newRound,
-          history: [...prev.history, historyEntry],
-        }
-      }
-
-      // Continue — next card after animation
       const nextCard = prev.deck[newRound] || null
+
       if (animationTimer.current) clearTimeout(animationTimer.current)
       animationTimer.current = setTimeout(() => {
+        // Single atomic update: advance card AND push history at the same time.
+        // This triggers the AnimatePresence key change (card exit) and history
+        // stack gain in the same render — the card visually "becomes" the top
+        // of the history stack rather than disappearing separately.
         setState(s => ({
           ...s,
-          currentCard: nextCard,
+          screen: nextScreen,
+          currentCard: nextScreen === 'game' ? nextCard : s.currentCard,
           phase: 'reading',
           selectedOption: null,
+          energy: newEnergy,
+          round: newRound,
+          history: [...s.history, historyEntry],
         }))
-      }, 700)
+      }, 650)
 
+      // Synchronous: only lock the card in animating phase.
+      // round and history stay unchanged until the timeout fires.
       return {
         ...prev,
         phase: 'animating',
         energy: newEnergy,
-        round: newRound,
-        history: [...prev.history, historyEntry],
       }
     })
   }, [])

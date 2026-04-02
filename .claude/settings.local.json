@@ -10,7 +10,15 @@
       "Bash(printf '\\\\n')",
       "WebSearch",
       "Bash(npm install:*)",
-      "Bash(npm run:*)"
+      "Bash(npm run:*)",
+      "Bash(/usr/local/bin/npm run:*)",
+      "Read(//usr/local/lib/node_modules/npm/bin/**)",
+      "Bash(command -v npm)",
+      "Bash(export PATH=$PATH:/usr/local/bin:/opt/homebrew/bin)",
+      "Read(//opt/homebrew/bin/**)",
+      "Bash(ls ~/.nvm/versions/node/*/bin/node)",
+      "Read(//usr/bin/**)",
+      "Read(//usr/**)"
     ]
   }
 }

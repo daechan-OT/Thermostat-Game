@@ -1,3 +1,4 @@
+import { motion } from 'framer-motion'
 import logo from '../../assets/logo.png'
 
 export default function WinModal({ onRestart }) {

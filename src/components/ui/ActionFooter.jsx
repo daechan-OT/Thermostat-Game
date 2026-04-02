@@ -53,8 +53,10 @@ export default function ActionFooter({
   }
 
   // Theme color for Understood button
-  // Meltdown (+ Energy) -> Red, Deepfreeze (- Energy) -> Blue
-  const understoodColor = card.energyImpact > 0 ? '#930018' : '#004E93'
+  // For choice cards in revealed phase we always use brand red (both options are shown)
+  // For environment cards: warm (positive impact) = red, cool (negative) = blue
+  const envImpact = card.type === 'environment' ? card.energyImpact : 0
+  const understoodColor = envImpact < 0 ? '#004E93' : '#930018'
   
   // Progress for autoplay ring
   const progress = (isAcknowledgePhase && autoplay)
@@ -95,7 +97,7 @@ export default function ActionFooter({
             fontFamily: '"Playfair Display", Georgia, serif',
             fontSize: 20,
             border: 'none',
-            boxShadow: `0 4px 20px ${card.energyImpact > 0 ? 'rgba(147,0,24,0.3)' : 'rgba(0,78,147,0.3)'}`,
+            boxShadow: `0 4px 20px ${envImpact < 0 ? 'rgba(0,78,147,0.3)' : 'rgba(147,0,24,0.3)'}`,
             cursor: 'pointer',
           }}
         >

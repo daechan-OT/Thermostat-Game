@@ -5,6 +5,16 @@
 :root {
   --font-display: 'Playfair Display', Georgia, serif;
   --font-body: 'DM Sans', system-ui, sans-serif;
+
+  /*
+   * --card-height: universal card height token.
+   * Responds to screen height via clamp:
+   *   - min 320px  (very small phones / landscape)
+   *   - preferred  46dvh (scales with viewport)
+   *   - max 500px  (large phones / tablets)
+   * Used by active cards, history mini cards, and the stack container.
+   */
+  --card-height: clamp(320px, 46dvh, 500px);
   --color-bg-primary: #FFF9EF;
   --color-bg-light: #FFDEE5;
   --color-bg-soft-blue: #D6E0FF;

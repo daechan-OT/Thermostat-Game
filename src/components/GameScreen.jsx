@@ -1,12 +1,10 @@
-// GameScreen — main game layout: header, gauge, active card, history tab
-
 import { useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import GaugeArc from './gauge/GaugeArc.jsx'
 import GaugeBar from './gauge/GaugeBar.jsx'
 import EnvironmentCard from './cards/EnvironmentCard.jsx'
 import ChoiceCard from './cards/ChoiceCard.jsx'
-import HistoryPanel from './history/HistoryPanel.jsx'
+import HistoryStack from './history/HistoryStack.jsx'
 import GaugeToggle from './ui/GaugeToggle.jsx'
 import ActionFooter from './ui/ActionFooter.jsx'
 
@@ -37,6 +35,11 @@ export default function GameScreen({
   } = state
 
   if (!currentCard) return null
+
+  const handleToggleHistory = () => {
+    if (historyOpen) onCloseHistory()
+    else onOpenHistory()
+  }
 
   return (
     <div
@@ -128,41 +131,61 @@ export default function GameScreen({
         </AnimatePresence>
       </div>
 
-      {/* Card area */}
-      <div className="flex-1 px-8 pt-4 pb-2">
-        {currentCard.type === 'environment' ? (
-          <EnvironmentCard
-            key={currentCard.id}
-            card={currentCard}
-          />
-        ) : (
-          <ChoiceCard
-            key={currentCard.id}
-            card={currentCard}
-            selectedOption={selectedOption}
-            phase={phase}
-            onSelectOption={onSelectOption}
-          />
-        )}
+      {/* Card Stack / Deck Area */}
+      <div
+        className="relative flex flex-col px-8 pt-10 pb-2 overflow-visible"
+        style={{ isolation: 'isolate', height: 'calc(var(--card-height) + 80px)' }}
+      >
+        {/* The physical history stack (Behind) */}
+        <HistoryStack
+          history={history}
+          isExpanded={historyOpen}
+          onToggle={handleToggleHistory}
+        />
+
+        {/* Current Active Card (On Top) */}
+        <div className="relative z-10 w-full h-full flex flex-col">
+          <AnimatePresence mode="wait">
+            {!historyOpen && (
+              <motion.div
+                key={currentCard.id}
+                initial={{ opacity: 0, scale: 0.92, y: 32 }}
+                animate={{ opacity: 1, scale: 1, y: 0, rotate: 0 }}
+                exit={{ opacity: 0.4, scale: 0.82, y: 40, rotate: -4, transition: { duration: 0.35, ease: 'easeIn' } }}
+                transition={{ type: 'spring', damping: 22, stiffness: 120 }}
+                className="w-full flex-1 flex flex-col"
+              >
+                {currentCard.type === 'environment' ? (
+                  <EnvironmentCard
+                    key={currentCard.id}
+                    card={currentCard}
+                  />
+                ) : (
+                  <ChoiceCard
+                    key={currentCard.id}
+                    card={currentCard}
+                    selectedOption={selectedOption}
+                    phase={phase}
+                    onSelectOption={onSelectOption}
+                  />
+                )}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
 
       {/* Action Footer */}
-      <ActionFooter
-        card={currentCard}
-        phase={phase}
-        selectedOption={selectedOption}
-        autoplay={autoplay}
-        onConfirm={onConfirm}
-        onAcknowledge={currentCard.type === 'environment' ? onAcknowledgeEnv : onAcknowledgeChoice}
-      />
-
-      {/* History panel */}
-      <HistoryPanel
-        history={history}
-        isOpen={historyOpen}
-        onOpen={onOpenHistory}
-        onClose={onCloseHistory}
-      />
+      {!historyOpen && (
+        <ActionFooter
+          card={currentCard}
+          phase={phase}
+          selectedOption={selectedOption}
+          autoplay={autoplay}
+          onConfirm={onConfirm}
+          onAcknowledge={currentCard.type === 'environment' ? onAcknowledgeEnv : onAcknowledgeChoice}
+        />
+      )}
     </div>
   )
 }

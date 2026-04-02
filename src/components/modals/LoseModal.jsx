@@ -1,3 +1,4 @@
+import { motion } from 'framer-motion'
 import logoLight from '../../assets/logo-light.png'
 
 export default function LoseModal({ energy, onRestart }) {

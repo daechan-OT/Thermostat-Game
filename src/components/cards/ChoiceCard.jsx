@@ -1,142 +1,181 @@
-// ChoiceCard — two-option choice card with reveal phase
+import { motion } from 'framer-motion'
+import CardShell, { TypeHeader, CardTitle, CardDescription } from './CardShell.jsx'
 
-import { useEffect, useRef, useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import Pill from '../ui/Pill.jsx'
+export function getChoiceImpactLabel(impact) {
+  if (impact === 'balance') return '1 Back to Balance'
+  if (impact > 0) return `+${impact} (Meltdown)`
+  if (impact < 0) return `${impact} (Deepfreeze)`
+  return '0 (Balanced)'
+}
 
-export default function ChoiceCard({
-  card,
-  selectedOption,
-  phase,         // 'reading' | 'revealed' | 'animating'
-  onSelectOption,
-}) {
-  const chosen = card.options.find(o => o.id === selectedOption)
-  const impactVariant = chosen
-    ? (chosen.energyImpact === 'balance' ? 'neutral' : (chosen.energyImpact > 0 ? 'negative' : (chosen.energyImpact < 0 ? 'positive' : 'neutral')))
-    : 'neutral'
-
+// ── Option button (reading phase) ─────────────────────────────────────────────
+function OptionButton({ opt, isSelected, onSelect }) {
   return (
-    <motion.div
-      initial={{ opacity: 0, x: -60, rotate: -6 }}
-      animate={{ opacity: 1, x: 0, rotate: 0 }}
-      transition={{ type: 'spring', damping: 20, stiffness: 100, mass: 0.8 }}
-      className="w-full rounded-2xl shadow-lg overflow-hidden"
+    <motion.button
+      onClick={() => onSelect(opt.id)}
+      whileTap={{ scale: 0.98 }}
+      animate={{ scale: isSelected ? 1.02 : 1 }}
+      transition={{ duration: 0.15 }}
       style={{
-        backgroundColor: '#fff',
-        border: '1px solid rgba(147,0,24,0.08)',
-        minHeight: 440,
-        display: 'flex',
-        flexDirection: 'column',
+        width: '100%',
+        padding: '14px 20px',
+        borderRadius: 14,
+        border: `2px solid ${isSelected ? '#930018' : 'rgba(147,0,24,0.35)'}`,
+        backgroundColor: isSelected ? 'rgba(147,0,24,0.06)' : 'transparent',
+        textAlign: 'center',
+        cursor: 'pointer',
+        fontFamily: '"DM Sans", system-ui, sans-serif',
+        fontSize: 15,
+        fontWeight: 600,
+        color: '#930018',
+        lineHeight: 1.5,
+        transition: 'background-color 0.15s, border-color 0.15s',
       }}
     >
-      <div className="p-5">
-        {/* Pill */}
-        <div className="flex items-center gap-2 mb-4">
-          <Pill variant="choice">{card.label}</Pill>
-        </div>
+      {opt.text}
+    </motion.button>
+  )
+}
 
-        {/* Title */}
-        <h2
-          className="mb-3 leading-tight"
-          style={{
-            fontFamily: '"Playfair Display", Georgia, serif',
-            fontSize: 22,
-            fontWeight: 700,
-            color: '#930018',
-          }}
-        >
-          {card.title}
-        </h2>
-
-        {/* Description */}
-        <p
-          className="mb-5"
-          style={{
-            fontFamily: '"DM Sans", system-ui, sans-serif',
-            fontSize: 15,
-            lineHeight: 1.65,
-            color: '#40000F',
-          }}
-        >
-          {card.description}
-        </p>
-
-        {/* Options */}
-        <div className="flex flex-col gap-3 mb-4">
-          {card.options.map(opt => {
-            const isSelected = selectedOption === opt.id
-            const isRevealed = phase === 'revealed' || phase === 'animating'
-            const isUnchosen = isRevealed && selectedOption !== opt.id
-
-            return (
-              <motion.button
-                key={opt.id}
-                onClick={() => phase === 'reading' && onSelectOption(opt.id)}
-                disabled={phase !== 'reading'}
-                whileTap={phase === 'reading' ? { scale: 0.98 } : {}}
-                animate={{
-                  opacity: isUnchosen ? 0.35 : 1,
-                  scale: isSelected ? 1.02 : 1,
-                }}
-                transition={{ duration: 0.2 }}
-                className="w-full text-left p-4 rounded-xl border-2 transition-colors"
-                style={{
-                  backgroundColor: isSelected ? '#FFDEE5' : '#FFF9EF',
-                  borderColor: isSelected ? '#930018' : 'rgba(147,0,24,0.25)',
-                  cursor: phase === 'reading' ? 'pointer' : 'default',
-                  fontFamily: '"DM Sans", system-ui, sans-serif',
-                  fontSize: 14,
-                  lineHeight: 1.6,
-                  color: '#40000F',
-                  fontWeight: isSelected ? 500 : 400,
-                }}
-              >
-                <span style={{ color: '#930018', fontWeight: 700, marginRight: 8 }}>
-                  {opt.id}.
-                </span>
-                {opt.text}
-              </motion.button>
-            )
-          })}
-        </div>
-
-        {/* Educational message — slides in after reveal */}
-        <AnimatePresence>
-          {(phase === 'revealed' || phase === 'animating') && chosen && (
-            <motion.div
-              initial={{ opacity: 0, y: -12, height: 0 }}
-              animate={{ opacity: 1, y: 0, height: 'auto' }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.25, ease: 'easeOut' }}
-              className="overflow-hidden"
-            >
-              <div
-                className="rounded-xl p-4 mb-4"
-                style={{ backgroundColor: '#FFF9EF', border: '1px solid rgba(147,0,24,0.12)' }}
-              >
-                <div className="flex items-center gap-2 mb-2">
-                  <span style={{ fontSize: 16 }}>💡</span>
-                  <Pill variant={impactVariant}>
-                    {chosen.energyImpact === 'balance' 
-                      ? 'Back to Balance' 
-                      : `Energy ${chosen.energyImpact > 0 ? `+${chosen.energyImpact}` : chosen.energyImpact}`}
-                  </Pill>
-                </div>
-                <p
-                  style={{
-                    fontFamily: '"DM Sans", system-ui, sans-serif',
-                    fontSize: 14,
-                    lineHeight: 1.65,
-                    color: '#40000F',
-                  }}
-                >
-                  {chosen.educationalMessage}
-                </p>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+// ── Revealed option block (revealed phase) ────────────────────────────────────
+function RevealedOption({ opt, isChosen }) {
+  return (
+    <div style={{
+      border: `1.5px solid ${isChosen ? 'rgba(255,255,255,0.5)' : 'rgba(255,255,255,0.2)'}`,
+      borderRadius: 14,
+      padding: '14px 16px',
+      opacity: isChosen ? 1 : 0.5,
+      display: 'flex',
+      flexDirection: 'column',
+      gap: 7,
+      textAlign: 'center',
+    }}>
+      <p style={{
+        fontFamily: '"DM Sans", system-ui, sans-serif',
+        fontSize: 14,
+        fontWeight: 700,
+        color: '#fff',
+        lineHeight: 1.45,
+        margin: 0,
+      }}>
+        "{opt.text}"
+      </p>
+      <p style={{
+        fontFamily: '"DM Sans", system-ui, sans-serif',
+        fontSize: 13,
+        color: 'rgba(255,222,229,0.9)',
+        lineHeight: 1.55,
+        margin: 0,
+      }}>
+        {opt.educationalMessage}
+      </p>
+      <div style={{ display: 'flex', justifyContent: 'center' }}>
+        <span style={{
+          display: 'inline-block',
+          border: '1.5px solid rgba(255,255,255,0.5)',
+          borderRadius: 999,
+          padding: '4px 14px',
+          fontFamily: '"DM Sans", system-ui, sans-serif',
+          fontSize: 12,
+          fontWeight: 600,
+          color: '#fff',
+        }}>
+          {getChoiceImpactLabel(opt.energyImpact)}
+        </span>
       </div>
-    </motion.div>
+    </div>
+  )
+}
+
+// ── Main component ────────────────────────────────────────────────────────────
+export default function ChoiceCard({ card, selectedOption, phase, onSelectOption }) {
+  const isRevealed = phase === 'revealed' || phase === 'animating'
+
+  return (
+    <div style={{
+      perspective: 1000,
+      width: '100%',
+      height: 'var(--card-height)',
+    }}>
+      <motion.div
+        initial={false}
+        animate={{ rotateY: isRevealed ? 180 : 0 }}
+        transition={{ duration: 0.55, ease: [0.4, 0, 0.2, 1] }}
+        style={{
+          width: '100%',
+          height: '100%',
+          transformStyle: 'preserve-3d',
+          position: 'relative',
+        }}
+      >
+        {/* ── FRONT (reading) ── */}
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          backfaceVisibility: 'hidden',
+          WebkitBackfaceVisibility: 'hidden',
+        }}>
+          <CardShell bg="#FFF9EF">
+            <TypeHeader label="Scenario" subtitle="You Set the Temperature" />
+            <CardTitle>{card.title}</CardTitle>
+            <CardDescription style={{ marginBottom: 24 }}>{card.description}</CardDescription>
+            <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 12, marginTop: 8 }}>
+              {card.options.map(opt => (
+                <OptionButton
+                  key={opt.id}
+                  opt={opt}
+                  isSelected={selectedOption === opt.id}
+                  onSelect={onSelectOption}
+                />
+              ))}
+            </div>
+          </CardShell>
+        </div>
+
+        {/* ── BACK (revealed) ── */}
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          backfaceVisibility: 'hidden',
+          WebkitBackfaceVisibility: 'hidden',
+          transform: 'rotateY(180deg)',
+        }}>
+          <div style={{
+            backgroundColor: '#930018',
+            border: '2px solid #930018',
+            borderRadius: 20,
+            width: '100%',
+            height: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            padding: '28px 20px',
+            overflowY: 'auto',
+            boxSizing: 'border-box',
+          }}>
+            <h2 style={{
+              fontFamily: '"Playfair Display", Georgia, serif',
+              fontSize: 24,
+              fontWeight: 700,
+              color: '#fff',
+              lineHeight: 1.25,
+              marginBottom: 20,
+              textAlign: 'center',
+            }}>
+              {card.title}
+            </h2>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              {card.options.map(opt => (
+                <RevealedOption
+                  key={opt.id}
+                  opt={opt}
+                  isChosen={selectedOption === opt.id}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+      </motion.div>
+    </div>
   )
 }
