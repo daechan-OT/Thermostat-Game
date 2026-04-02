@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion'
+import logoLight from '../../assets/logo-light.png'
 
 export default function LoseModal({ energy, onRestart }) {
   const isFrozen = energy <= -5
@@ -32,8 +32,12 @@ export default function LoseModal({ energy, onRestart }) {
           textAlign: 'center',
         }}
       >
-        {/* Icon */}
-        <div style={{ fontSize: 56, marginBottom: 16 }}>{icon}</div>
+        {/* Logo */}
+        <img
+          src={logoLight}
+          alt="Energy shift"
+          style={{ width: 80, height: 'auto', marginBottom: 24, marginInline: 'auto', display: 'block' }}
+        />
 
         {/* Headline */}
         <h2

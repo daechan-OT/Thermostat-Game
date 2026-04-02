@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion'
+import logo from '../assets/logo.png'
 
 const RULES = [
   {
@@ -27,27 +28,12 @@ export default function WelcomeScreen({ onStart }) {
     >
       {/* Logo / Wordmark */}
       <div className="text-center mb-2 mt-4">
-        {/* Thermometer SVG icon */}
-        <svg
-          width="56" height="80"
-          viewBox="0 0 56 80"
-          fill="none"
-          className="mx-auto mb-5"
-          aria-hidden="true"
-        >
-          {/* Stem */}
-          <rect x="22" y="4" width="12" height="48" rx="6" fill="#FFDEE5" stroke="#930018" strokeWidth="2" />
-          {/* Mercury fill */}
-          <rect x="24" y="30" width="8" height="22" rx="4" fill="#930018" />
-          {/* Bulb */}
-          <circle cx="28" cy="62" r="12" fill="#930018" />
-          <circle cx="28" cy="62" r="7" fill="#E31F26" />
-          {/* Tick marks */}
-          <line x1="34" y1="18" x2="40" y2="18" stroke="#930018" strokeWidth="1.5" strokeLinecap="round" opacity="0.5" />
-          <line x1="34" y1="28" x2="40" y2="28" stroke="#930018" strokeWidth="1.5" strokeLinecap="round" opacity="0.5" />
-          <line x1="34" y1="38" x2="38" y2="38" stroke="#930018" strokeWidth="1.5" strokeLinecap="round" opacity="0.3" />
-          <line x1="34" y1="48" x2="40" y2="48" stroke="#930018" strokeWidth="1.5" strokeLinecap="round" opacity="0.5" />
-        </svg>
+        {/* Project Logo */}
+        <img
+          src={logo}
+          alt="Thermostat Challenge Logo"
+          style={{ width: 120, height: 'auto', marginBottom: 24, marginInline: 'auto', display: 'block' }}
+        />
 
         <h1
           style={{

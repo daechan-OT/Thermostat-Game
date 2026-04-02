@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion'
+import logo from '../../assets/logo.png'
 
 export default function WinModal({ onRestart }) {
   return (
@@ -28,8 +28,12 @@ export default function WinModal({ onRestart }) {
           textAlign: 'center',
         }}
       >
-        {/* Icon */}
-        <div style={{ fontSize: 56, marginBottom: 16 }}>🌡️</div>
+        {/* Logo */}
+        <img
+          src={logo}
+          alt="Success"
+          style={{ width: 80, height: 'auto', marginBottom: 24, marginInline: 'auto', display: 'block' }}
+        />
 
         {/* Headline */}
         <h2

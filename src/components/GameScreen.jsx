@@ -10,6 +10,8 @@ import GaugeToggle from './ui/GaugeToggle.jsx'
 import AutoplayButton from './ui/AutoplayButton.jsx'
 import ActionFooter from './ui/ActionFooter.jsx'
 
+import logo from '../assets/logo.png'
+
 export default function GameScreen({
   state,
   displayEnergy,
@@ -73,6 +75,13 @@ export default function GameScreen({
         >
           Round {round + 1} / 10
         </span>
+
+        {/* Small Logo Centered */}
+        <img
+          src={logo}
+          alt="Logo"
+          style={{ height: 28, width: 'auto', position: 'absolute', left: '50%', transform: 'translateX(-50%)' }}
+        />
 
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
           <GaugeToggle view={gaugeView} onToggle={onToggleGaugeView} />

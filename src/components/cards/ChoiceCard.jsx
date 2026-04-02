@@ -17,11 +17,17 @@ export default function ChoiceCard({
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 32 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3, ease: 'easeOut' }}
+      initial={{ opacity: 0, x: -60, rotate: -6 }}
+      animate={{ opacity: 1, x: 0, rotate: 0 }}
+      transition={{ type: 'spring', damping: 20, stiffness: 100, mass: 0.8 }}
       className="w-full rounded-2xl shadow-lg overflow-hidden"
-      style={{ backgroundColor: '#fff', border: '1px solid rgba(147,0,24,0.08)' }}
+      style={{
+        backgroundColor: '#fff',
+        border: '1px solid rgba(147,0,24,0.08)',
+        minHeight: 440,
+        display: 'flex',
+        flexDirection: 'column',
+      }}
     >
       <div className="p-5">
         {/* Pill */}
