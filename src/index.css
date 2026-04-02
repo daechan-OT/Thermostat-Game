@@ -1,0 +1,68 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-body: 'DM Sans', system-ui, sans-serif;
+  --color-bg-primary: #FFF9EF;
+  --color-bg-light: #FFDEE5;
+  --color-bg-soft-blue: #D6E0FF;
+  --color-brand: #930018;
+  --color-brand-deep: #40000F;
+  --color-brand-bright: #E31F26;
+  --color-pink-light: #FFDEE5;
+  --color-pink-mid: #FFADB0;
+  --color-blue-light: #D6E0FF;
+  --color-blue-mid: #9BB4FF;
+  --color-green-light: #D0FCA1;
+  --color-green-mid: #B7EB7F;
+  --color-text-primary: #930018;
+  --color-text-secondary: #40000F;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--color-bg-primary);
+  font-family: var(--font-body);
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: none;
+}
+
+#root {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Gauge needle animation */
+.gauge-needle {
+  transform-origin: 50% 100%;
+  transition: transform 600ms ease-in-out;
+}
+
+/* SVG autoplay ring animation */
+@keyframes countdown-ring {
+  from { stroke-dashoffset: 0; }
+  to   { stroke-dashoffset: 113; }
+}
+
+.autoplay-ring {
+  animation: countdown-ring 5s linear forwards;
+  transform-origin: center;
+  transform: rotate(-90deg);
+}
+
+/* Scrollbar hide utility */
+.scrollbar-hide {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}

@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm create:*)",
+      "Read(//usr/local/bin/**)",
+      "Read(//Users/daechan/.nvm/versions/**)",
+      "Bash(export PATH=\"/usr/local/bin:$PATH\")",
+      "Bash(npm --version)",
+      "Bash(npx --yes create-vite . --template react)",
+      "Bash(printf '\\\\n')",
+      "WebSearch",
+      "Bash(npm install:*)",
+      "Bash(npm run:*)"
+    ]
+  }
+}
