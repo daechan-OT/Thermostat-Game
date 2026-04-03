@@ -146,31 +146,29 @@ export default function GameScreen({
         {/* Current Active Card (On Top) */}
         <div className="relative z-10 w-full h-full flex flex-col">
           <AnimatePresence mode="wait">
-            {!historyOpen && (
-              <motion.div
-                key={currentCard.id}
-                initial={{ opacity: 0, scale: 0.92, y: 32 }}
-                animate={{ opacity: 1, scale: 1, y: 0, rotate: 0 }}
-                exit={{ opacity: 0.4, scale: 0.82, y: 40, rotate: -4, transition: { duration: 0.35, ease: 'easeIn' } }}
-                transition={{ type: 'spring', damping: 22, stiffness: 120 }}
-                className="w-full flex-1 flex flex-col"
-              >
-                {currentCard.type === 'environment' ? (
-                  <EnvironmentCard
-                    key={currentCard.id}
-                    card={currentCard}
-                  />
-                ) : (
-                  <ChoiceCard
-                    key={currentCard.id}
-                    card={currentCard}
-                    selectedOption={selectedOption}
-                    phase={phase}
-                    onSelectOption={onSelectOption}
-                  />
-                )}
-              </motion.div>
-            )}
+            <motion.div
+              key={currentCard.id}
+              initial={{ opacity: 0, scale: 0.92, y: 32 }}
+              animate={{ opacity: 1, scale: 1, y: 0, rotate: 0 }}
+              exit={{ opacity: 0.4, scale: 0.82, y: 40, rotate: -4, transition: { duration: 0.25, ease: 'easeIn' } }}
+              transition={{ type: 'spring', damping: 22, stiffness: 120 }}
+              className="w-full flex-1 flex flex-col"
+            >
+              {currentCard.type === 'environment' ? (
+                <EnvironmentCard
+                  key={currentCard.id}
+                  card={currentCard}
+                />
+              ) : (
+                <ChoiceCard
+                  key={currentCard.id}
+                  card={currentCard}
+                  selectedOption={selectedOption}
+                  phase={phase}
+                  onSelectOption={onSelectOption}
+                />
+              )}
+            </motion.div>
           </AnimatePresence>
         </div>
       </div>

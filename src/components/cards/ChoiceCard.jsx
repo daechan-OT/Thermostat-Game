@@ -25,7 +25,7 @@ function OptionButton({ opt, isSelected, onSelect }) {
         textAlign: 'center',
         cursor: 'pointer',
         fontFamily: '"DM Sans", system-ui, sans-serif',
-        fontSize: 15,
+        fontSize: 13,
         fontWeight: 600,
         color: '#930018',
         lineHeight: 1.5,
@@ -52,7 +52,7 @@ function RevealedOption({ opt, isChosen }) {
     }}>
       <p style={{
         fontFamily: '"DM Sans", system-ui, sans-serif',
-        fontSize: 14,
+        fontSize: 12,
         fontWeight: 700,
         color: '#fff',
         lineHeight: 1.45,
@@ -62,7 +62,7 @@ function RevealedOption({ opt, isChosen }) {
       </p>
       <p style={{
         fontFamily: '"DM Sans", system-ui, sans-serif',
-        fontSize: 13,
+        fontSize: 11,
         color: 'rgba(255,222,229,0.9)',
         lineHeight: 1.55,
         margin: 0,
@@ -95,6 +95,8 @@ export default function ChoiceCard({ card, selectedOption, phase, onSelectOption
     <div style={{
       perspective: 1000,
       width: '100%',
+      maxWidth: 320,
+      marginInline: 'auto',
       height: 'var(--card-height)',
     }}>
       <motion.div
@@ -116,10 +118,24 @@ export default function ChoiceCard({ card, selectedOption, phase, onSelectOption
           WebkitBackfaceVisibility: 'hidden',
         }}>
           <CardShell bg="#FFF9EF">
+            {/* Top: crown + type label */}
             <TypeHeader label="Scenario" subtitle="You Set the Temperature" />
-            <CardTitle>{card.title}</CardTitle>
-            <CardDescription style={{ marginBottom: 24 }}>{card.description}</CardDescription>
-            <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 12, marginTop: 8 }}>
+
+            {/* Middle: title + description */}
+            <div style={{
+              flex: 1,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '8px 0',
+            }}>
+              <CardTitle>{card.title}</CardTitle>
+              <CardDescription>{card.description}</CardDescription>
+            </div>
+
+            {/* Bottom: option buttons */}
+            <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 10 }}>
               {card.options.map(opt => (
                 <OptionButton
                   key={opt.id}

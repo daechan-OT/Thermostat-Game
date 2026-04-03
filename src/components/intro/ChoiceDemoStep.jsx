@@ -1,0 +1,147 @@
+import { useState } from 'react'
+import { motion } from 'framer-motion'
+import GaugeArc from '../gauge/GaugeArc'
+import ChoiceCard from '../cards/ChoiceCard'
+import DemoFeedbackModal from './DemoFeedbackModal'
+
+const MOCK_CHOICE = {
+  id: 'demo-choice',
+  type: 'choice',
+  title: 'The $40 Mistake',
+  description:
+    'A team member just remade a large order wrong. The guest is annoyed. Everyone saw it.',
+  options: [
+    {
+      id: 'a',
+      text: 'Address it calmly after the rush',
+      energyImpact: -1,
+      educationalMessage:
+        'Calm, private correction keeps the team steady and builds trust over time.',
+    },
+    {
+      id: 'b',
+      text: 'Correct them publicly right now',
+      energyImpact: 2,
+      educationalMessage:
+        'Public correction spikes team anxiety and signals instability to everyone watching.',
+    },
+  ],
+}
+
+export default function ChoiceDemoStep({ onNext, onEnergyChange }) {
+  const [selectedOption, setSelectedOption] = useState(null)
+  const [phase, setPhase] = useState('reading')
+  const [energy, setEnergy] = useState(0)
+  const [showModal, setShowModal] = useState(false)
+  const [modalImpact, setModalImpact] = useState('')
+  const [modalBody, setModalBody] = useState('')
+
+  const hasSelection = selectedOption !== null
+  const isRevealed = phase === 'revealed'
+
+  const handleConfirm = () => {
+    const opt = MOCK_CHOICE.options.find(o => o.id === selectedOption)
+    if (!opt) return
+
+    const delta = typeof opt.energyImpact === 'number' ? opt.energyImpact : 0
+    const newEnergy = Math.max(-5, Math.min(5, delta))
+
+    setPhase('revealed')
+    setEnergy(newEnergy)
+    onEnergyChange?.(newEnergy)
+
+    const impactLabel = delta > 0 ? `+${delta} Store Energy` : `${delta} Store Energy`
+    setModalImpact(impactLabel)
+    setModalBody(opt.educationalMessage)
+
+    setTimeout(() => setShowModal(true), 650)
+  }
+
+  return (
+    <div
+      style={{
+        flex: 1,
+        display: 'flex',
+        flexDirection: 'column',
+        padding: '4px 20px 8px',
+        minHeight: 0,
+      }}
+    >
+      {/* Step badge */}
+      <p
+        style={{
+          fontFamily: '"DM Sans", system-ui, sans-serif',
+          fontSize: 11,
+          fontWeight: 700,
+          letterSpacing: '0.11em',
+          textTransform: 'uppercase',
+          color: '#930018',
+          textAlign: 'center',
+          marginBottom: 10,
+        }}
+      >
+        Demo · Round 1 — Scenario Card
+      </p>
+
+      {/* Gauge — starts at 0 */}
+      <GaugeArc energy={energy} />
+
+      {/* Context line */}
+      <p
+        style={{
+          fontFamily: '"DM Sans", system-ui, sans-serif',
+          fontSize: 13,
+          color: 'rgba(64,0,15,0.55)',
+          textAlign: 'center',
+          lineHeight: 1.6,
+          margin: '6px 8px 16px',
+        }}
+      >
+        {isRevealed
+          ? 'Your choice moved the gauge — you set the temperature.'
+          : 'You go first. Pick a response and set the store temperature.'}
+      </p>
+
+      {/* Card */}
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', position: 'relative' }}>
+        <ChoiceCard
+          card={MOCK_CHOICE}
+          selectedOption={selectedOption}
+          phase={phase}
+          onSelectOption={isRevealed ? () => {} : setSelectedOption}
+        />
+        <DemoFeedbackModal
+          visible={showModal}
+          impact={modalImpact}
+          body={modalBody}
+          onNext={onNext}
+        />
+      </div>
+
+      {/* Action button */}
+      <div style={{ marginTop: 16, flexShrink: 0 }}>
+        <motion.button
+          animate={{ opacity: hasSelection && !isRevealed ? 1 : 0.3 }}
+          whileTap={hasSelection && !isRevealed ? { scale: 0.97 } : {}}
+          onClick={hasSelection && !isRevealed ? handleConfirm : undefined}
+          disabled={isRevealed}
+          style={{
+            width: '100%',
+            padding: '17px',
+            borderRadius: 16,
+            border: 'none',
+            backgroundColor: '#930018',
+            color: '#fff',
+            fontFamily: '"Playfair Display", Georgia, serif',
+            fontSize: 18,
+            fontWeight: 700,
+            cursor: hasSelection && !isRevealed ? 'pointer' : 'default',
+            boxShadow: hasSelection && !isRevealed ? '0 4px 18px rgba(147,0,24,0.28)' : 'none',
+          }}
+        >
+          {isRevealed ? 'Confirmed' : hasSelection ? 'Confirm Choice' : 'Select an option above'}
+        </motion.button>
+      </div>
+    </div>
+  )
+}

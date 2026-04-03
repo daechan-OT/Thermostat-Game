@@ -104,7 +104,7 @@ export function useGameState() {
   // ── confirmChoice ──────────────────────────────────────────────────────────
   const confirmChoice = useCallback(() => {
     setState(prev => {
-      if (!prev.selectedOption) return prev
+      if (prev.phase !== 'reading' || !prev.selectedOption) return prev
       return { ...prev, phase: 'revealed' }
     })
   }, [])
@@ -124,6 +124,7 @@ export function useGameState() {
   // currentCard changes — so the card never appears in both places at once.
   const applyEnergy = useCallback((impact) => {
     setState(prev => {
+      if (prev.phase === 'animating') return prev   // already processing — ignore extra taps
       let delta = impact
       if (impact === 'balance') {
         delta = prev.energy > 0 ? -1 : prev.energy < 0 ? 1 : 0
