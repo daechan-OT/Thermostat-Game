@@ -7,16 +7,22 @@ export function getEnvImpactLabel(impact) {
   return '0 (Balanced)'
 }
 
-// Kept for any external usage (history stack tinting etc.) but cards are now cream
-export function getEnvBg() { return '#FFF9EF' }
+// Card background reflects impact direction — blue = drains energy, pink = raises energy
+export function getEnvBg(energyImpact) {
+  if (energyImpact > 0) return '#FFDEE5'
+  if (energyImpact < 0) return '#D6E0FF'
+  return '#FFF9EF'
+}
 
+// Pill uses white bg so it pops against the coloured card background
 function getEnvPill(energyImpact) {
-  if (energyImpact > 0) return { bgColor: '#FFDEE5', color: '#930018', borderColor: 'rgba(147,0,24,0.18)' }
-  if (energyImpact < 0) return { bgColor: '#D6E0FF', color: '#004E93', borderColor: 'rgba(0,78,147,0.18)' }
-  return { bgColor: '#E8F5E8', color: '#1A6B2A', borderColor: 'rgba(26,107,42,0.18)' }
+  if (energyImpact > 0) return { bgColor: '#fff', color: '#930018', borderColor: 'rgba(147,0,24,0.25)' }
+  if (energyImpact < 0) return { bgColor: '#fff', color: '#004E93', borderColor: 'rgba(0,78,147,0.25)' }
+  return { bgColor: '#fff', color: '#1A6B2A', borderColor: 'rgba(26,107,42,0.25)' }
 }
 
 export default function EnvironmentCard({ card }) {
+  const bg   = getEnvBg(card.energyImpact)
   const pill = getEnvPill(card.energyImpact)
 
   return (
@@ -26,7 +32,7 @@ export default function EnvironmentCard({ card }) {
       transition={{ type: 'spring', damping: 22, stiffness: 110 }}
       style={{ width: '100%' }}
     >
-      <CardShell bg="#FFF9EF">
+      <CardShell bg={bg}>
         {/* Top: crown + type label */}
         <TypeHeader label="Environment" subtitle="Out of Your Control" />
 
