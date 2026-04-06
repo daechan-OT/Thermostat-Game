@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion'
 
-export default function DemoFeedbackModal({ visible, impact, body, onNext }) {
+export default function DemoFeedbackModal({ visible, impact, body, onNext, nextLabel = 'Next →' }) {
   return (
     <AnimatePresence>
       {visible && (
@@ -91,7 +91,7 @@ export default function DemoFeedbackModal({ visible, impact, body, onNext }) {
                 boxShadow: '0 4px 18px rgba(147,0,24,0.25)',
               }}
             >
-              Next →
+              {nextLabel}
             </motion.button>
           </motion.div>
         </motion.div>

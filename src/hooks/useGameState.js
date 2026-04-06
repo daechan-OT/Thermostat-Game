@@ -14,34 +14,18 @@ function buildDeck() {
   const allChoices = shuffle(CARD_DECK.filter(c => c.type === 'choice'))
   const allEnvs = shuffle(CARD_DECK.filter(c => c.type === 'environment'))
 
-  // Pool a random mix for a 10-card deck (e.g. 6 Choices and 4 Environments)
-  // This ensures we have enough Choices to separate any consecutive Environments.
-  const deck = shuffle([
-    ...allChoices.slice(0, 6),
-    ...allEnvs.slice(0, 4)
-  ])
+  // First card is always a choice — placed before shuffling the rest
+  const deck = [
+    allChoices[0],
+    ...shuffle([...allChoices.slice(1, 6), ...allEnvs.slice(0, 4)]),
+  ]
 
-  // Pass 1: Ensure the first card is always a Choice
-  if (deck[0]?.type === 'environment') {
-    const swapIdx = deck.findIndex(c => c.type === 'choice')
-    if (swapIdx !== -1) {
-      ;[deck[0], deck[swapIdx]] = [deck[swapIdx], deck[0]]
-    }
-  }
-
-  // Pass 2: No consecutive Environment cards
-  for (let i = 0; i < deck.length - 1; i++) {
+  // Pass: No consecutive Environment cards (starts at 1 — index 0 is guaranteed choice)
+  for (let i = 1; i < deck.length - 1; i++) {
     if (deck[i].type === 'environment' && deck[i + 1]?.type === 'environment') {
-      // Find the next available choice card to swap into position i+1
       const swapIdx = deck.findIndex((c, idx) => idx > i + 1 && c.type === 'choice')
       if (swapIdx !== -1) {
         ;[deck[i + 1], deck[swapIdx]] = [deck[swapIdx], deck[i + 1]]
-      } else {
-        // If no choice card remains (shouldn't happen with 6:4 mix), try swapping with an earlier choice
-        const earlierSwapIdx = deck.findIndex((c, idx) => idx < i && c.type === 'choice' && deck[idx - 1]?.type !== 'environment')
-        if (earlierSwapIdx !== -1) {
-           ;[deck[i+1], deck[earlierSwapIdx]] = [deck[earlierSwapIdx], deck[i+1]]
-        }
       }
     }
   }

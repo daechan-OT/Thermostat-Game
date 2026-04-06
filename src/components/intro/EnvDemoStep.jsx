@@ -4,23 +4,54 @@ import GaugeArc from '../gauge/GaugeArc'
 import EnvironmentCard from '../cards/EnvironmentCard'
 import DemoFeedbackModal from './DemoFeedbackModal'
 
-const MOCK_ENV = {
-  id: 'demo-env',
-  type: 'environment',
-  title: 'Morning Rush',
-  description:
-    'Three team members called out sick. The line is out the door and guests are growing restless.',
-  energyImpact: 2,
-}
+const MOCK_ENV_CARDS = [
+  {
+    id: 'demo-env-freeze',
+    type: 'environment',
+    title: 'Skeleton Crew Morning',
+    description:
+      'Half the team called in last night. The floor is quiet, tasks are piling up, and the mood is flat before the day even starts.',
+    energyImpact: -2,
+  },
+  {
+    id: 'demo-env-meltdown',
+    type: 'environment',
+    title: 'Morning Rush',
+    description:
+      'Three team members called out sick. The line is out the door and guests are growing restless.',
+    energyImpact: 2,
+  },
+]
 
 export default function EnvDemoStep({ onNext, startEnergy = 0 }) {
+  const [cardIdx, setCardIdx] = useState(0)
   const [understood, setUnderstood] = useState(false)
   const [energy, setEnergy] = useState(startEnergy)
 
+  const card = MOCK_ENV_CARDS[cardIdx]
+  const isLast = cardIdx === MOCK_ENV_CARDS.length - 1
+
   const handleUnderstood = () => {
-    setEnergy(prev => Math.max(-5, Math.min(5, prev + MOCK_ENV.energyImpact)))
+    setEnergy(prev => Math.max(-5, Math.min(5, prev + card.energyImpact)))
     setUnderstood(true)
   }
+
+  const handleNext = () => {
+    if (isLast) {
+      onNext()
+    } else {
+      setCardIdx(i => i + 1)
+      setUnderstood(false)
+    }
+  }
+
+  const impactLabel = card.energyImpact > 0
+    ? `+${card.energyImpact} Store Energy`
+    : `${card.energyImpact} Store Energy`
+
+  const feedbackBody = isLast
+    ? "Environment cards happen regardless of what you do. You can't choose them — but every round, your response to them is still yours to own."
+    : "Energy can drop just as fast as it rises. Either way, the environment card is out of your hands — what happens next is still yours to shape."
 
   return (
     <div
@@ -45,7 +76,7 @@ export default function EnvDemoStep({ onNext, startEnergy = 0 }) {
           marginBottom: 10,
         }}
       >
-        Demo · Round 2 — Environment Card
+        Demo · Round 2 — Environment Card {cardIdx + 1}/{MOCK_ENV_CARDS.length}
       </p>
 
       {/* Gauge — inherits energy from choice demo */}
@@ -69,16 +100,17 @@ export default function EnvDemoStep({ onNext, startEnergy = 0 }) {
 
       {/* Card */}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', position: 'relative' }}>
-        <EnvironmentCard card={MOCK_ENV} />
+        <EnvironmentCard card={card} />
         <DemoFeedbackModal
           visible={understood}
-          impact={`+${MOCK_ENV.energyImpact} Store Energy`}
-          body="Environment cards happen regardless of what you do. You can't choose them — but every round, your response to them is still yours to own."
-          onNext={onNext}
+          impact={impactLabel}
+          body={feedbackBody}
+          onNext={handleNext}
+          nextLabel={isLast ? 'Next →' : 'See Another →'}
         />
       </div>
 
-      {/* Action button — matches fixed footer position */}
+      {/* Action button */}
       <div style={{ marginTop: 16, flexShrink: 0, paddingBottom: 32 }}>
         <motion.button
           initial={{ opacity: 0, y: 8 }}

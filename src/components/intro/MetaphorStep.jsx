@@ -81,6 +81,7 @@ function MiniCard({ bg, borderColor, label, title, pillText, pillColor, pillBg, 
 // ── Step ──────────────────────────────────────────────────────────────────────
 export default function MetaphorStep() {
   const [demoIdx, setDemoIdx] = useState(0)
+  const [accordionOpen, setAccordionOpen] = useState(false)
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -200,6 +201,77 @@ export default function MetaphorStep() {
           </p>
         </motion.div>
       ))}
+
+      {/* ── "Why does this matter?" accordion ── */}
+      <div style={{
+        border: '1.5px solid rgba(147,0,24,0.18)',
+        borderRadius: 14,
+        overflow: 'hidden',
+        marginTop: 8,
+      }}>
+        {/* Header */}
+        <button
+          onClick={() => setAccordionOpen(o => !o)}
+          style={{
+            width: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: '14px 16px',
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            gap: 8,
+          }}
+        >
+          <span style={{
+            fontFamily: '"DM Sans", system-ui, sans-serif',
+            fontSize: 14,
+            fontWeight: 700,
+            color: '#930018',
+            textAlign: 'left',
+          }}>
+            Why does this matter in real life?
+          </span>
+          <span style={{
+            fontSize: 18,
+            color: '#930018',
+            flexShrink: 0,
+            lineHeight: 1,
+            transform: accordionOpen ? 'rotate(0deg)' : 'rotate(180deg)',
+            transition: 'transform 0.2s ease',
+          }}>
+            ↑
+          </span>
+        </button>
+
+        {/* Body */}
+        {accordionOpen && (
+          <div style={{
+            padding: '0 16px 16px',
+            borderTop: '1px solid rgba(147,0,24,0.12)',
+          }}>
+            <p style={{
+              fontFamily: '"DM Sans", system-ui, sans-serif',
+              fontSize: 14,
+              color: '#40000F',
+              lineHeight: 1.75,
+              margin: '12px 0 12px',
+            }}>
+              Emotions move through teams like temperature through a room — quietly and automatically. When a manager walks in tense, stress hormones in the brain spike across the team within minutes. Things start to slip. People pull back.
+            </p>
+            <p style={{
+              fontFamily: '"DM Sans", system-ui, sans-serif',
+              fontSize: 14,
+              color: '#40000F',
+              lineHeight: 1.75,
+              margin: 0,
+            }}>
+              When you stay regulated — not robotic, but <strong>steady</strong> — your team has permission to stay calm too. That's not soft leadership. That's the <strong>most powerful lever</strong> you have as a manager.
+            </p>
+          </div>
+        )}
+      </div>
 
     </div>
   )
